@@ -1,0 +1,54 @@
+# This workflow will build a package using Maven and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path
+
+name: Auto Build
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '*.md'
+      - '*.yml'
+      - 'LICENSE'
+      - '.github/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Checking if this needs building
+      id: get_commit_message
+      run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+    
+    - name: Set up JDK 21
+      if: "! contains(env.commit_message, '[NO BUILD]')"
+      uses: actions/setup-java@v2
+      with:
+        java-version: 21
+        distribution: 'zulu'
+        
+    - name: Grant execute permission for gradlew
+      if: "! contains(env.commit_message, '[NO BUILD]')"
+      run: chmod +x gradlew
+      
+    - name: Build with Gradle
+      if: "! contains(env.commit_message, '[NO BUILD]')"
+      run: ./gradlew build
+      
+    - name: Get commit ID
+      if: "! contains(env.commit_message, '[NO BUILD]')"
+      id: get_commit
+      run: echo "commit_id=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      
+    - name: Create GitHub Release
+      if: "! contains(env.commit_message, '[NO BUILD]')"
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "1.21"
+        prerelease: false
+        title: "${{ env.commit_id }}"
+        files: |
+          ./build/libs/*.jar

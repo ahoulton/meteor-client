@@ -5,6 +5,7 @@
 
 package meteordevelopment.meteorclient.systems.modules.combat;
 
+import meteordevelopment.meteorclient.events.game.GameLeftEvent;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.pathing.PathManagers;
@@ -37,6 +38,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MaceItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -71,6 +73,13 @@ public class KillAura extends Module {
     private final Setting<Boolean> autoSwitch = sgGeneral.add(new BoolSetting.Builder()
         .name("auto-switch")
         .description("Switches to your selected weapon when attacking the target.")
+        .defaultValue(false)
+        .build()
+    );
+
+    private final Setting<Boolean> autoToggle = sgGeneral.add(new BoolSetting.Builder()
+        .name("auto-toggle")
+        .description("Auto disables Kill Aura when needed.")
         .defaultValue(false)
         .build()
     );
@@ -395,6 +404,27 @@ public class KillAura extends Module {
 
         hitTimer = 0;
     }
+
+    // start of auto toggle events.
+    @EventHandler
+    private void ToggleOnDeathPacket(PacketEvent.Receive event)  {
+        if (event.packet instanceof DeathMessageS2CPacket packet) {
+            Entity entity = mc.world.getEntityById(packet.playerId());
+            if (entity == mc.player && autoToggle.get()) {
+                toggle();
+                info("Toggled off because you died.");
+            }
+        }
+    }
+
+    @EventHandler
+    private void ToggleOnWorldLeavePacket(GameLeftEvent event) {
+        if (autoToggle.get()) {
+            toggle();
+            info("Toggled off because you changed worlds.");
+        }
+    }
+    //end of auto toggle events.
 
     private boolean itemInHand() {
         if (shouldShieldBreak()) return mc.player.getMainHandStack().getItem() instanceof AxeItem;
