@@ -82,7 +82,7 @@ public class MeteorClient implements ClientModInitializer {
         }
 
         LOG.info("Initializing {}", NAME);
-        LOG.warn("You are using a modified version of {}, do not report any issues to {}'s team unless directed to.", NAME, NAME);
+        LOG.warn("You are using a modified version of {}, do not report any issues to {}'s maintainers unless directed to.", NAME, NAME);
 
         // Global minecraft client accessor
         mc = MinecraftClient.getInstance();
