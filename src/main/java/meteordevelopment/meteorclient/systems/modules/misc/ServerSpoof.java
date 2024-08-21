@@ -103,7 +103,7 @@ public class ServerSpoof extends Module {
             event.cancel();
 
             MutableText msg = Text.literal("This server has ");
-            msg.append(packet.required() ? "a required " : "an optional ").append("resource pack. ");
+            msg.append(packet.required() ? "a required " : "a optional ").append("resource pack. ");
 
             MutableText link = Text.literal("[Download]");
             link.setStyle(link.getStyle()
@@ -121,7 +121,7 @@ public class ServerSpoof extends Module {
                     event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.ACCEPTED));
                     event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED));
                 }))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to spoof accepting the recourse pack.")))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to spoof accepting the resource pack.")))
             );
 
             msg.append(link).append(" ");

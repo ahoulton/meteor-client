@@ -17,37 +17,37 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    
+
     - name: Checking if this needs building
       id: get_commit_message
       run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
-    
+
     - name: Set up JDK 21
       if: "! contains(env.commit_message, '[skip ci]')"
       uses: actions/setup-java@v2
       with:
         java-version: 21
         distribution: 'zulu'
-        
+
     - name: Grant execute permission for gradlew
       if: "! contains(env.commit_message, '[skip ci]')"
       run: chmod +x gradlew
-      
+
     - name: Build with Gradle
       if: "! contains(env.commit_message, '[skip ci]')"
       run: ./gradlew build
-      
+
     - name: Get commit ID
       if: "! contains(env.commit_message, '[skip ci]')"
       id: get_commit
       run: echo "commit_id=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-      
+
     - name: Create GitHub Release
       if: "! contains(env.commit_message, '[skip ci]')"
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "1.21"
+        automatic_release_tag: "1.21.1"
         prerelease: true
         title: "${{ env.commit_id }}"
         files: |
