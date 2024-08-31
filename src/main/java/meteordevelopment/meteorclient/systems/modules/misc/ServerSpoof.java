@@ -110,7 +110,7 @@ public class ServerSpoof extends Module {
                 .withColor(Formatting.BLUE)
                 .withUnderline(true)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, packet.url()))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to download")))
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to download.")))
             );
 
             MutableText acceptance = Text.literal("[Spoof Acceptance]");
