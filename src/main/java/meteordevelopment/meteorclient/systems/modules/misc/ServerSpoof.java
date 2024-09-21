@@ -83,10 +83,8 @@ public class ServerSpoof extends Module {
     @EventHandler
     private void onPacketSend(PacketEvent.Send event) {
         if (!isActive()) return;
-
         if (event.packet instanceof CustomPayloadC2SPacket) {
             Identifier id = ((CustomPayloadC2SPacket) event.packet).payload().getId().id();
-
             if (blockChannels.get()) {
                 for (String channel : channels.get()) {
                     if (StringUtils.containsIgnoreCase(id.toString(), channel)) {
@@ -95,16 +93,13 @@ public class ServerSpoof extends Module {
                     }
                 }
             }
-
             if (spoofBrand.get() && id.equals(BrandCustomPayload.ID.id())) {
                 CustomPayloadC2SPacket spoofedPacket = new CustomPayloadC2SPacket(new BrandCustomPayload(brand.get()));
-
                 // PacketEvent.Send doesn't trigger if we send the packet like this
                 event.connection.send(spoofedPacket, null, true);
                 event.cancel();
             }
         }
-
         // we want to accept the pack silently to prevent the server detecting you bypassed it when logging in
         if (silentAcceptResourcePack && event.packet instanceof ResourcePackStatusC2SPacket) event.cancel();
     }
@@ -113,46 +108,21 @@ public class ServerSpoof extends Module {
     private void onPacketReceive(PacketEvent.Receive event) {
         if (!isActive() || !resourcePack.get()) return;
         if (!(event.packet instanceof ResourcePackSendS2CPacket packet)) return;
-
         event.cancel();
         event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.ACCEPTED));
         event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.DOWNLOADED));
         event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED));
 
-<<<<<<< HEAD
-            MutableText msg = Text.literal("This server has ");
-            msg.append(packet.required() ? "a required " : "a optional ").append("resource pack. ");
-
-            MutableText link = Text.literal("[Download]");
-            link.setStyle(link.getStyle()
-                .withColor(Formatting.BLUE)
-                .withUnderline(true)
-                .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, packet.url()))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to download.")))
-            );
-
-            MutableText acceptance = Text.literal("[Spoof Acceptance]");
-            acceptance.setStyle(acceptance.getStyle()
-                .withColor(Formatting.DARK_GREEN)
-                .withUnderline(true)
-                .withClickEvent(new RunnableClickEvent(() -> {
-                    event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.ACCEPTED));
-                    event.connection.send(new ResourcePackStatusC2SPacket(packet.id(), ResourcePackStatusC2SPacket.Status.SUCCESSFULLY_LOADED));
-                }))
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to spoof accepting the resource pack.")))
-            );
-=======
-        msg = Text.literal("This server has ");
-        msg.append(packet.required() ? "a required " : "an optional ").append("resource pack. ");
-
+        MutableText msg = Text.literal("This server has ");
+        msg.append(packet.required() ? "a required " : "a optional ").append("resource pack.");
         MutableText link = Text.literal("[Open URL]");
+
         link.setStyle(link.getStyle()
             .withColor(Formatting.BLUE)
             .withUnderline(true)
             .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, packet.url()))
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to open the pack url")))
         );
-
         MutableText acceptance = Text.literal("[Accept Pack]");
         acceptance.setStyle(acceptance.getStyle()
             .withColor(Formatting.DARK_GREEN)
@@ -167,8 +137,6 @@ public class ServerSpoof extends Module {
             }))
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to accept and apply the pack.")))
         );
->>>>>>> 11d4efc103718710475851d952c2cb67f22b4b63
-
         msg.append(link).append(" ");
         msg.append(acceptance).append(".");
     }
@@ -176,7 +144,6 @@ public class ServerSpoof extends Module {
     @EventHandler
     private void onTick(TickEvent.Pre event) {
         if (!isActive() || !Utils.canUpdate() || msg == null) return;
-
         info(msg);
         msg = null;
     }
