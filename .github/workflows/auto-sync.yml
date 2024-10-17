@@ -16,19 +16,17 @@ jobs:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch Upstream Default Branch
+      - name: Fetch Upstream Master
         run: |
           git remote add upstream https://github.com/MeteorDevelopment/meteor-client.git
-          UPSTREAM_BRANCH=master
-          echo "Upstream branch is $UPSTREAM_BRANCH"
-          git fetch upstream $UPSTREAM_BRANCH  # Fetch the correct branch from upstream
-          git branch -r  # List remote branches for verification
+          git fetch upstream master
+          git checkout master
 
       - name: Check Fork Status
         id: check
         run: |
-          UPSTREAM=$(git rev-parse upstream/$UPSTREAM_BRANCH)
-          FORK=$(git rev-parse origin/master)  # Replace 'master' if your default branch is different
+          UPSTREAM=$(git rev-parse upstream/master)
+          FORK=$(git rev-parse origin/master)  # Compare the master branches explicitly
 
           if [ "$UPSTREAM" != "$FORK" ]; then
             echo "Fork is behind upstream."
@@ -41,7 +39,7 @@ jobs:
       - name: Merge and Push
         if: steps.check.outputs.behind == 'true'
         run: |
-          git merge upstream/$UPSTREAM_BRANCH
+          git merge upstream/master
           git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
