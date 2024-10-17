@@ -1,0 +1,43 @@
+name: Auto Sync
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Fork
+        uses: actions/checkout@v3
+        with:
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch Upstream
+        run: |
+          git remote add upstream https://github.com/MeteorDevelopment/meteor-client.git
+          git fetch upstream
+
+      - name: Check Fork Status
+        id: check
+        run: |
+          UPSTREAM=$(git rev-parse upstream/main)
+          FORK=$(git rev-parse origin/main)
+
+          if [ "$UPSTREAM" != "$FORK" ]; then
+            echo "Fork is behind upstream."
+            echo "::set-output name=behind::true"
+          else
+            echo "Fork is up to date."
+            echo "::set-output name=behind::false"
+          fi
+
+      - name: Merge and Push
+        if: steps.check.outputs.behind == 'true'
+        run: |
+          git merge upstream/main
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
