@@ -10,6 +10,10 @@ on:
       - '.gitignore'
       - 'LICENSE'
       - '.github/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
