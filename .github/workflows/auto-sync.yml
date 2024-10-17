@@ -19,7 +19,7 @@ jobs:
       - name: Fetch Upstream Default Branch
         run: |
           git remote add upstream https://github.com/MeteorDevelopment/meteor-client.git
-          UPSTREAM_BRANCH=$(git ls-remote --heads upstream | grep 'refs/heads/' | head -n 1 | sed 's?.*refs/heads/??')
+          UPSTREAM_BRANCH=master
           echo "Upstream branch is $UPSTREAM_BRANCH"
           git fetch upstream $UPSTREAM_BRANCH  # Fetch the correct branch from upstream
           git branch -r  # List remote branches for verification
