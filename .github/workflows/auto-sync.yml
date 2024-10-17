@@ -16,6 +16,11 @@ jobs:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure Git
+        run: |
+          git config --global user.email "ignhoulton@gmail.com"
+          git config --global user.name "Houlton"
+
       - name: Fetch Upstream Master
         run: |
           git remote add upstream https://github.com/MeteorDevelopment/meteor-client.git
