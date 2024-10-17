@@ -26,7 +26,7 @@ jobs:
         id: check
         run: |
           UPSTREAM=$(git rev-parse upstream/master)
-          FORK=$(git rev-parse origin/master)  # Compare the master branches explicitly
+          FORK=$(git rev-parse origin/master)
 
           if [ "$UPSTREAM" != "$FORK" ]; then
             echo "Fork is behind upstream."
@@ -39,7 +39,7 @@ jobs:
       - name: Merge and Push
         if: steps.check.outputs.behind == 'true'
         run: |
-          git merge upstream/master
+          git merge upstream/master --allow-unrelated-histories
           git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
