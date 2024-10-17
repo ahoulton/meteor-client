@@ -8,6 +8,7 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Fork
         uses: actions/checkout@v3
@@ -15,16 +16,19 @@ jobs:
           ref: master
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fetch Upstream
+      - name: Fetch Upstream Default Branch
         run: |
           git remote add upstream https://github.com/MeteorDevelopment/meteor-client.git
-          git fetch upstream
+          UPSTREAM_BRANCH=$(git ls-remote --heads upstream | grep 'refs/heads/' | head -n 1 | sed 's?.*refs/heads/??')
+          echo "Upstream branch is $UPSTREAM_BRANCH"
+          git fetch upstream $UPSTREAM_BRANCH  # Fetch the correct branch from upstream
+          git branch -r  # List remote branches for verification
 
       - name: Check Fork Status
         id: check
         run: |
-          UPSTREAM=$(git rev-parse upstream/main)
-          FORK=$(git rev-parse origin/main)
+          UPSTREAM=$(git rev-parse upstream/$UPSTREAM_BRANCH)
+          FORK=$(git rev-parse origin/master)  # Replace 'master' if your default branch is different
 
           if [ "$UPSTREAM" != "$FORK" ]; then
             echo "Fork is behind upstream."
@@ -37,7 +41,7 @@ jobs:
       - name: Merge and Push
         if: steps.check.outputs.behind == 'true'
         run: |
-          git merge upstream/main
-          git push origin main
+          git merge upstream/$UPSTREAM_BRANCH
+          git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
