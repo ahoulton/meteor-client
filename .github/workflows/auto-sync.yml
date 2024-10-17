@@ -44,7 +44,7 @@ jobs:
       - name: Merge and Push
         if: steps.check.outputs.behind == 'true'
         run: |
-          git merge upstream/master --allow-unrelated-histories
+          git merge upstream/master --allow-unrelated-histories -X theirs
           git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
