@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
 import meteordevelopment.meteorclient.pathing.PathManagers;
 import meteordevelopment.meteorclient.settings.*;
+import meteordevelopment.meteorclient.systems.config.Config;
 import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.modules.Categories;
 import meteordevelopment.meteorclient.systems.modules.Module;
@@ -410,16 +411,20 @@ public class KillAura extends Module {
             Entity entity = mc.world.getEntityById(packet.playerId());
             if (entity == mc.player && autoToggle.get()) {
                 toggle();
-                info("Toggled off because you died.");
+                if (Config.get().chatFeedback.get() && chatFeedback) {
+                    info("Toggled off because you died.");
+                }
             }
         }
     }
 
     @EventHandler
     private void ToggleOnWorldLeavePacket(GameLeftEvent event) {
-        if (autoToggle.get()) {
+        if (autoToggle.get() && Config.get().chatFeedback.get()) {
             toggle();
-            info("Toggled off because you changed worlds.");
+            if (Config.get().chatFeedback.get() && chatFeedback) {
+                info("Toggled off because you changed worlds.");
+            }
         }
     }
     //end of auto toggle events.
