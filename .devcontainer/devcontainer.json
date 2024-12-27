@@ -1,0 +1,27 @@
+{
+    "name": "Debian Dev Container with Java",
+    "build": {
+      "dockerfile": "Dockerfile",
+      "context": "."
+    },
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "bash",
+          "editor.formatOnSave": true
+        },
+        "extensions": [
+          "ms-vscode.vscode-typescript-next",
+          "redhat.java",
+          "vscjava.vscode-java-pack"
+        ]
+      }
+    },
+    "postCreateCommand": "java -version && git --version",
+    "remoteUser": "root",
+    "features": {
+      "ghcr.io/devcontainers/features/java:1": {
+        "version": "21"
+      }
+    }
+  }
