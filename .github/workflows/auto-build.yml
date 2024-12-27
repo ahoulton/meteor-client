@@ -44,8 +44,8 @@ jobs:
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "1.21.1"
+        automatic_release_tag: "1.21.3"
         prerelease: false
-        title: "MC 1.21.1"
+        title: "MC 1.21.3"
         files: |
-          ./build/libs/meteor-client-1.21.1-modified.jar
+          ./build/libs/*
