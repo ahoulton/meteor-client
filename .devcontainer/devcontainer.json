@@ -1,9 +1,5 @@
 {
     "name": "Debian Dev Container with Java",
-    "build": {
-      "dockerfile": "Dockerfile",
-      "context": "."
-    },
     "customizations": {
       "vscode": {
         "settings": {
