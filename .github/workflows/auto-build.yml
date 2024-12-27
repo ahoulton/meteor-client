@@ -1,0 +1,51 @@
+name: Auto Build & Upload
+
+on:
+  push:
+    branches: [master]
+    paths-ignore:
+      - '*.md'
+      - '*.yml'
+      - '.editorconfig'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.github/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up JDK 21.
+      uses: actions/setup-java@v2
+      with:
+        java-version: 21
+        distribution: 'zulu'
+
+    - name: Gradle - Cache Packages.
+      uses: actions/cache@v3
+      with:
+        path: ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Gradle - Setup & Build.
+      run: |
+        chmod +x gradlew
+        ./gradlew build --daemon
+
+    - name: Upload Built JAR to GitHub.
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "1.21.1"
+        prerelease: false
+        title: "MC 1.21.1"
+        files: |
+          ./build/libs/meteor-client-1.21.1-modified.jar
